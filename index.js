@@ -3,7 +3,17 @@ const aedes = require('aedes')();
 const server = require('net').createServer(aedes.handle);
 const httpServer = require('http').createServer();
 const ws = require('websocket-stream');
+const admin = require('firebase-admin');
 
+// Initialize Firebase Admin SDK
+const serviceAccount = require("./mqtt-73b63-firebase-adminsdk-fbsvc-2c089ee371.json");
+
+admin.initializeApp({
+	credential: admin.credential.cert(serviceAccount),
+	databaseURL: "https://mqtt-73b63-default-rtdb.firebaseio.com"
+});
+
+const db = admin.database();
 const port = 1883;
 const wsPort = 8883;
 
@@ -30,6 +40,27 @@ aedes.on('clientDisconnect', function(client) {
 aedes.on('publish', async function(packet, client) {
 	if (client) {
 		console.log(`Message from ${client.id}: ${packet.topic} -> ${packet.payload.toString()}`);
+
+		// Store message in Firebase Realtime Database
+		try {
+			const messageData = {
+				clientId: client.id,
+				topic: packet.topic,
+				payload: packet.payload.toString(),
+				timestamp: admin.database.ServerValue.TIMESTAMP,
+				date: new Date().toISOString()
+			};
+
+			// Store in messages node with auto-generated key
+			await db.ref('messages').push(messageData);
+
+			// Also store latest message per topic for easy access
+			await db.ref(`topics/${packet.topic.replace(/\//g, '_')}`).set(messageData);
+
+			console.log('Message stored in Firebase successfully');
+		} catch (error) {
+			console.error('Error storing message in Firebase:', error);
+		}
 	}
 });
 

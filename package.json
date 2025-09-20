@@ -12,6 +12,7 @@
   "description": "",
   "dependencies": {
     "aedes": "^0.51.3",
+    "firebase-admin": "^13.5.0",
     "websocket-stream": "^5.5.2"
   },
   "devDependencies": {
