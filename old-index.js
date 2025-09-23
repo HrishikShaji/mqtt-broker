@@ -1,51 +1,32 @@
+
+// mqtt-broker.js
 const aedes = require('aedes')();
 const server = require('net').createServer(aedes.handle);
-const http = require('http');
+const httpServer = require('http').createServer();
 const ws = require('websocket-stream');
 const admin = require('firebase-admin');
 
 // Initialize Firebase Admin SDK
 const serviceAccount = require("./mqtt-73b63-firebase-adminsdk-fbsvc-988e726fad.json");
+
 admin.initializeApp({
 	credential: admin.credential.cert(serviceAccount),
 	databaseURL: "https://mqtt-73b63-default-rtdb.firebaseio.com"
 });
 
 const db = admin.database();
+const port = 4000;
+const wsPort = 5000;
 
-// Use Render's PORT environment variable
-const port = process.env.PORT || 4000;
-const mqttPort = 1883; // Standard MQTT port for internal use
-
-// Create HTTP server that handles both WebSocket and health checks
-const httpServer = http.createServer((req, res) => {
-	// Handle health check requests
-	if (req.url === '/health' || req.url === '/') {
-		res.writeHead(200, {
-			'Content-Type': 'application/json',
-			'Access-Control-Allow-Origin': '*'
-		});
-		res.end(JSON.stringify({
-			status: 'healthy',
-			mqtt_port: mqttPort,
-			websocket_port: port,
-			timestamp: new Date().toISOString()
-		}));
-	} else {
-		res.writeHead(404, { 'Content-Type': 'application/json' });
-		res.end(JSON.stringify({ error: 'Not found' }));
-	}
+// MQTT over TCP
+server.listen(port, function() {
+	console.log(`MQTT Broker started on port ${port}`);
 });
 
-// MQTT over TCP (use different port from HTTP)
-server.listen(mqttPort, '0.0.0.0', function() {
-	console.log(`MQTT Broker started on port ${mqttPort}`);
-});
-
-// MQTT over WebSocket + HTTP health check on Render's required port
+// MQTT over WebSocket
 ws.createServer({ server: httpServer }, aedes.handle);
-httpServer.listen(port, '0.0.0.0', function() {
-	console.log(`HTTP/WebSocket server started on port ${port}`);
+httpServer.listen(wsPort, function() {
+	console.log(`MQTT WebSocket server started on port ${wsPort}`);
 });
 
 // Event handlers
