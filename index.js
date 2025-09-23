@@ -6,7 +6,7 @@ const ws = require('websocket-stream');
 const admin = require('firebase-admin');
 
 // Initialize Firebase Admin SDK
-const serviceAccount = require("./mqtt-73b63-firebase-adminsdk-fbsvc-2c089ee371.json");
+const serviceAccount = require("./mqtt-73b63-firebase-adminsdk-fbsvc-988e726fad.json");
 
 admin.initializeApp({
 	credential: admin.credential.cert(serviceAccount),
@@ -14,8 +14,8 @@ admin.initializeApp({
 });
 
 const db = admin.database();
-const port = 1883;
-const wsPort = 8883;
+const port = 4000;
+const wsPort = 5000;
 
 // MQTT over TCP
 server.listen(port, function() {
