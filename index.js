@@ -5,7 +5,7 @@ const ws = require('websocket-stream');
 const admin = require('firebase-admin');
 
 // Initialize Firebase Admin SDK
-const serviceAccount = require("./mqtt-73b63-firebase-adminsdk-fbsvc-988e726fad.json");
+const serviceAccount = require("./mqtt-73b63-firebase-adminsdk-fbsvc-c65e4564a8.json");
 admin.initializeApp({
 	credential: admin.credential.cert(serviceAccount),
 	databaseURL: "https://mqtt-73b63-default-rtdb.firebaseio.com"
