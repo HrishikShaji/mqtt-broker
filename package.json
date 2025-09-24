@@ -2,6 +2,7 @@
   "name": "mqtt-broker",
   "version": "1.0.0",
   "main": "index.js",
+  "type":"module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
@@ -12,6 +13,7 @@
   "description": "",
   "dependencies": {
     "aedes": "^0.51.3",
+    "dotenv": "^17.2.2",
     "firebase-admin": "^13.5.0",
     "websocket-stream": "^5.5.2"
   },
