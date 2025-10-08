@@ -55,6 +55,7 @@ httpServer.listen(process.env.PORT || 8080, function() {
 
 // Store published messages in Firebase
 aedesInstance.on('publish', async function(packet, client) {
+	console.log("Publishing...", packet.payload.toString())
 	if (client) {
 		try {
 			await db.ref('messages').push({
